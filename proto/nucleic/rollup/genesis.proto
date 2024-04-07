@@ -1,0 +1,12 @@
+syntax = "proto3";
+package nucleic.rollup;
+
+option go_package = "github.com/nucleic-network/nucleic/x/rollup/types";
+
+import "gogoproto/gogo.proto";
+import "nucleic/rollup/params.proto";
+
+// GenesisState defines the rollup module's genesis state.
+message GenesisState { 
+    Params params = 1 [ (gogoproto.nullable) = false ]; 
+}

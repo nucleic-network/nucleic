@@ -1,0 +1,29 @@
+syntax = "proto3";
+package nucleic.rollup;
+
+option go_package = "github.com/nucleic-network/nucleic/x/rollup/types";
+
+
+// Msg defines the Msg service
+service Msg {
+    rpc CreateRollup(MsgCreateRollup) returns (MsgCreateRollupResponse);
+    rpc UpdateState(MsgUpdateState) returns (MsgUpdateStateResponse);
+}
+
+// MsgCreateRollup creates a rollup app on the share sequencer chain
+message MsgCreateRollup {
+    string creator = 1;
+    string rollup_id = 2;
+
+}
+message MsgCreateRollupResponse {
+
+}
+
+message MsgUpdateState {
+
+}
+
+message MsgUpdateStateResponse {
+
+}

@@ -1,0 +1,52 @@
+syntax = "proto3";
+package nucleic.rollup;
+
+option go_package = "github.com/nucleic-network/nucleic/x/rollup/types";
+
+import "gogoproto/gogo.proto";
+import "nucleic/rollup/block.proto";
+
+// StateInfoIndex is the data used for indexing and retrieving a StateInfo 
+// it updated and saved with every UpdateState in StateInfo.
+// We use the this structure also for:
+// 1. LatestStateInfoIndex which defines the rollups' current (latest) index of the last UpdateState 
+// 2. LatestFinalizedStateIndex which defines the rollups' current (latest) index of the latest StateInfo that was finalized
+message StateInfoIndex {
+    // rollupId is the rollup that the sequencer belongs to and asking to update
+    // it used to identify the what rollup a StateInfo belongs
+    // The rollupId follows the same standard as cosmos chain_id
+    string rollupId = 1; 
+    // index is a sequential increasing number, updating on each
+    // state update used for indexing to a specific state info, the first index is 1
+    uint64 index = 2; 
+}
+
+enum StateStatus {
+    PENDING = 0;
+    FINALIZED = 1;
+    REVERTED = 3;
+}
+
+// StateInfo defines a state of the rollup.
+message StateInfo {
+    // stateInfoIndex defines what rollup the state belongs to
+    // and in which index it can be referenced
+    StateInfoIndex stateInfoIndex = 1 [(gogoproto.nullable) = false];
+    // sequencer is the bech32-encoded address of the sequencer sent the update
+    string sequencer = 2;
+    // startHeight is the block height of the first block in the batch
+    uint64 startHeight = 3;
+    // numBlocks is the number of blocks included in this batch update
+    uint64 numBlocks = 4;
+    // DAPath is the description of the location on the DA layer
+    string DAPath = 5;
+    // version is the version of the rollup
+    uint64 version = 6;
+    // creationHeight is the height at which the UpdateState took place
+    uint64 creationHeight = 7; 
+    // status is the status of the state update
+    StateStatus status = 8; 
+    // BDs is a list of block description objects (one per block)
+    // the list must be ordered by height, starting from startHeight to startHeight+numBlocks-1
+    BlockDescriptors BDs = 9 [(gogoproto.nullable) = false];
+} 

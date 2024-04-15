@@ -13,7 +13,7 @@ func (k Keeper) SetRollup(ctx sdk.Context, rollup types.Rollup) error {
 	if err != nil {
 		return err
 	}
-	store.Set(types.RollappKey(
+	store.Set(types.RollupKey(
 		rollup.RollupId,
 	), bz)
 	return nil

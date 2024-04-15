@@ -5,26 +5,26 @@ import "encoding/binary"
 var _ binary.ByteOrder
 
 const (
-	// RollappKeyPrefix is the prefix to retrieve all Rollapp
-	RollappKeyPrefix         = "Rollapp/value/"
-	RollappByEIP155KeyPrefix = "RollappByEIP155/value/"
+	// RollupKeyPrefix is the prefix to retrieve all Rollup
+	RollupKeyPrefix         = "Rollup/value/"
+	RollupByEIP155KeyPrefix = "RollupByEIP155/value/"
 )
 
-// RollappKey returns the store key to retrieve a Rollapp from the index fields
-func RollappKey(
-	rollappId string,
+// RollupKey returns the store key to retrieve a Rollup from the index fields
+func RollupKey(
+	rollupId string,
 ) []byte {
 	var key []byte
 
-	rollappIdBytes := []byte(rollappId)
-	key = append(key, rollappIdBytes...)
+	rollupIdBytes := []byte(rollupId)
+	key = append(key, rollupIdBytes...)
 	key = append(key, []byte("/")...)
 
 	return key
 }
 
-// RollappByEIP155Key returns the store key to retrieve a Rollapp from the index fields
-func RollappByEIP155Key(
+// RollupByEIP155Key returns the store key to retrieve a Rollup from the index fields
+func RollupByEIP155Key(
 	eip155 uint64,
 ) []byte {
 	var key []byte

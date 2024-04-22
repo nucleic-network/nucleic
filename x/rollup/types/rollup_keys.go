@@ -11,9 +11,7 @@ const (
 )
 
 // RollupKey returns the store key to retrieve a Rollup from the index fields
-func RollupKey(
-	rollupId string,
-) []byte {
+func RollupKey(rollupId string) []byte {
 	var key []byte
 
 	rollupIdBytes := []byte(rollupId)
@@ -24,9 +22,7 @@ func RollupKey(
 }
 
 // RollupByEIP155Key returns the store key to retrieve a Rollup from the index fields
-func RollupByEIP155Key(
-	eip155 uint64,
-) []byte {
+func RollupByEIP155Key(eip155 uint64) []byte {
 	var key []byte
 
 	eip155Bytes := make([]byte, 8)

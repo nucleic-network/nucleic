@@ -21,7 +21,7 @@ var (
 	ErrMultiUpdateStateInBlock             = errorsmod.Register(ModuleName, 1010, "only one state update can take place per block")
 	ErrInvalidStateRoot                    = errorsmod.Register(ModuleName, 1011, "invalid blocks state root")
 	ErrUnauthorizedRollappCreator          = errorsmod.Register(ModuleName, 1013, "rollapp creator not registered in the whitelist")
-	ErrInvalidClientType                   = errorsmod.Register(ModuleName, 1014, "client type of the rollapp isn't dymint")
+	ErrInvalidClientType                   = errorsmod.Register(ModuleName, 1014, "client type of the rollapp isn't rollkit")
 	ErrHeightStateNotFinalized             = errorsmod.Register(ModuleName, 1015, "rollapp block on this height was not finalized yet")
 	ErrInvalidAppHash                      = errorsmod.Register(ModuleName, 1016, "the app hash is different from the finalized state root")
 	ErrStateNotExists                      = errorsmod.Register(ModuleName, 1017, "state of this height doesn't exist")

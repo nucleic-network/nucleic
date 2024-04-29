@@ -1,7 +1,0 @@
-syntax = "proto3";
-package nucleic.rollup;
-
-option go_package = "github.com/nucleic-network/nucleic/x/rollup/types";
-
-// Params defines the parameters for the module.
-message Params {}

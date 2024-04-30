@@ -62,15 +62,15 @@ func request_Query_Rollapp_0(ctx context.Context, marshaler runtime.Marshaler, c
 		_   = err
 	)
 
-	val, ok = pathParams["rollappId"]
+	val, ok = pathParams["rollapp_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "rollappId")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "rollapp_id")
 	}
 
 	protoReq.RollappId, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "rollappId", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "rollapp_id", err)
 	}
 
 	msg, err := client.Rollapp(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -89,15 +89,15 @@ func local_request_Query_Rollapp_0(ctx context.Context, marshaler runtime.Marsha
 		_   = err
 	)
 
-	val, ok = pathParams["rollappId"]
+	val, ok = pathParams["rollapp_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "rollappId")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "rollapp_id")
 	}
 
 	protoReq.RollappId, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "rollappId", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "rollapp_id", err)
 	}
 
 	msg, err := server.Rollapp(ctx, &protoReq)
@@ -196,7 +196,7 @@ func local_request_Query_RollappAll_0(ctx context.Context, marshaler runtime.Mar
 }
 
 var (
-	filter_Query_LatestHeight_0 = &utilities.DoubleArray{Encoding: map[string]int{"rollappId": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
+	filter_Query_LatestHeight_0 = &utilities.DoubleArray{Encoding: map[string]int{"rollapp_id": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
 )
 
 func request_Query_LatestHeight_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
@@ -210,15 +210,15 @@ func request_Query_LatestHeight_0(ctx context.Context, marshaler runtime.Marshal
 		_   = err
 	)
 
-	val, ok = pathParams["rollappId"]
+	val, ok = pathParams["rollapp_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "rollappId")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "rollapp_id")
 	}
 
 	protoReq.RollappId, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "rollappId", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "rollapp_id", err)
 	}
 
 	if err := req.ParseForm(); err != nil {
@@ -244,15 +244,15 @@ func local_request_Query_LatestHeight_0(ctx context.Context, marshaler runtime.M
 		_   = err
 	)
 
-	val, ok = pathParams["rollappId"]
+	val, ok = pathParams["rollapp_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "rollappId")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "rollapp_id")
 	}
 
 	protoReq.RollappId, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "rollappId", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "rollapp_id", err)
 	}
 
 	if err := req.ParseForm(); err != nil {
@@ -268,7 +268,7 @@ func local_request_Query_LatestHeight_0(ctx context.Context, marshaler runtime.M
 }
 
 var (
-	filter_Query_LatestStateIndex_0 = &utilities.DoubleArray{Encoding: map[string]int{"rollappId": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
+	filter_Query_LatestStateIndex_0 = &utilities.DoubleArray{Encoding: map[string]int{"rollapp_id": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
 )
 
 func request_Query_LatestStateIndex_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
@@ -282,15 +282,15 @@ func request_Query_LatestStateIndex_0(ctx context.Context, marshaler runtime.Mar
 		_   = err
 	)
 
-	val, ok = pathParams["rollappId"]
+	val, ok = pathParams["rollapp_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "rollappId")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "rollapp_id")
 	}
 
 	protoReq.RollappId, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "rollappId", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "rollapp_id", err)
 	}
 
 	if err := req.ParseForm(); err != nil {
@@ -316,15 +316,15 @@ func local_request_Query_LatestStateIndex_0(ctx context.Context, marshaler runti
 		_   = err
 	)
 
-	val, ok = pathParams["rollappId"]
+	val, ok = pathParams["rollapp_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "rollappId")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "rollapp_id")
 	}
 
 	protoReq.RollappId, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "rollappId", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "rollapp_id", err)
 	}
 
 	if err := req.ParseForm(); err != nil {
@@ -340,7 +340,7 @@ func local_request_Query_LatestStateIndex_0(ctx context.Context, marshaler runti
 }
 
 var (
-	filter_Query_StateInfo_0 = &utilities.DoubleArray{Encoding: map[string]int{"rollappId": 0, "index": 1}, Base: []int{1, 1, 2, 0, 0}, Check: []int{0, 1, 1, 2, 3}}
+	filter_Query_StateInfo_0 = &utilities.DoubleArray{Encoding: map[string]int{"rollapp_id": 0, "index": 1}, Base: []int{1, 1, 2, 0, 0}, Check: []int{0, 1, 1, 2, 3}}
 )
 
 func request_Query_StateInfo_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
@@ -354,15 +354,15 @@ func request_Query_StateInfo_0(ctx context.Context, marshaler runtime.Marshaler,
 		_   = err
 	)
 
-	val, ok = pathParams["rollappId"]
+	val, ok = pathParams["rollapp_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "rollappId")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "rollapp_id")
 	}
 
 	protoReq.RollappId, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "rollappId", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "rollapp_id", err)
 	}
 
 	val, ok = pathParams["index"]
@@ -399,15 +399,15 @@ func local_request_Query_StateInfo_0(ctx context.Context, marshaler runtime.Mars
 		_   = err
 	)
 
-	val, ok = pathParams["rollappId"]
+	val, ok = pathParams["rollapp_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "rollappId")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "rollapp_id")
 	}
 
 	protoReq.RollappId, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "rollappId", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "rollapp_id", err)
 	}
 
 	val, ok = pathParams["index"]
@@ -787,17 +787,17 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 var (
 	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"nucleic", "rollapp", "params"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_Rollapp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"nucleic", "rollapp", "rollappId"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_Rollapp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"nucleic", "rollapp", "rollapp_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
 	pattern_Query_RollappByEIP155_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 2}, []string{"nucleic", "rollapp", "eip155"}, "", runtime.AssumeColonVerbOpt(false)))
 
 	pattern_Query_RollappAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 1}, []string{"nucleic", "rollapp"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_LatestHeight_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"nucleic", "rollapp", "latest_height", "rollappId"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_LatestHeight_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"nucleic", "rollapp", "latest_height", "rollapp_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_LatestStateIndex_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"nucleic", "rollapp", "latest_state_index", "rollappId"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_LatestStateIndex_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"nucleic", "rollapp", "latest_state_index", "rollapp_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_StateInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"nucleic", "rollapp", "state_info", "rollappId", "index"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_StateInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"nucleic", "rollapp", "state_info", "rollapp_id", "index"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (

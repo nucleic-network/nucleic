@@ -48,10 +48,4 @@ var (
 	ErrLogic                               = errorsmod.Register(ModuleName, 1038, "internal logic error")
 	ErrUnauthorized                        = errorsmod.Register(ModuleName, 1039, "unauthorized")
 	ErrInvalidAddress                      = errorsmod.Register(ModuleName, 1040, "invalid address")
-
-	/* ------------------------------ fraud related ----------------------------- */
-	ErrDisputeAlreadyFinalized = errorsmod.Register(ModuleName, 2000, "disputed height already finalized")
-	ErrDisputeAlreadyReverted  = errorsmod.Register(ModuleName, 2001, "disputed height already reverted")
-	ErrWrongClientId           = errorsmod.Register(ModuleName, 2002, "client id does not match the rollapp")
-	ErrWrongProposerAddr       = errorsmod.Register(ModuleName, 2003, "wrong proposer address")
 )

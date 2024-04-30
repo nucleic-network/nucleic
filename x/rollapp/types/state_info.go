@@ -6,7 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func NewStateInfo(rollappId string, newIndex uint64, creator string, startHeight, numBlocks uint64, daPath string, version, height uint64, BDs BlockDescriptors) *StateInfo {
+func NewStateInfo(rollappId string, newIndex uint64, creator string, startHeight, numBlocks uint64, daPath string, version, height uint64, bds BlockDescriptors) *StateInfo {
 	stateInfoIndex := StateInfoIndex{RollappId: rollappId, Index: newIndex}
 	status := Status_PENDING
 	return &StateInfo{
@@ -14,11 +14,11 @@ func NewStateInfo(rollappId string, newIndex uint64, creator string, startHeight
 		Sequencer:      creator,
 		StartHeight:    startHeight,
 		NumBlocks:      numBlocks,
-		DAPath:         daPath,
+		DaPath:         daPath,
 		Version:        version,
 		CreationHeight: height,
 		Status:         status,
-		BDs:            BDs,
+		Bds:            bds,
 	}
 }
 
@@ -40,7 +40,7 @@ func (s *StateInfo) GetEvents() []sdk.Attribute {
 		sdk.NewAttribute(AttributeKeyStateInfoIndex, strconv.FormatUint(s.StateInfoIndex.Index, 10)),
 		sdk.NewAttribute(AttributeKeyStartHeight, strconv.FormatUint(s.StartHeight, 10)),
 		sdk.NewAttribute(AttributeKeyNumBlocks, strconv.FormatUint(s.NumBlocks, 10)),
-		sdk.NewAttribute(AttributeKeyDAPath, s.DAPath),
+		sdk.NewAttribute(AttributeKeyDAPath, s.DaPath),
 		sdk.NewAttribute(AttributeKeyStatus, s.Status.String()),
 	}
 	return eventAttributes

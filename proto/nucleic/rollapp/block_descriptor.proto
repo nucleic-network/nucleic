@@ -9,12 +9,12 @@ import "gogoproto/gogo.proto";
 message BlockDescriptor {
   // height is the height of the block
   uint64 height = 1;
-  // stateRoot is a 32 byte array of the hash of the block (state root of the
+  // state_root is a 32 byte array of the hash of the block (state root of the
   // block)
-  bytes stateRoot = 2;
+  bytes state_root = 2;
 }
 
 // BlockDescriptors defines list of BlockDescriptor.
 message BlockDescriptors {
-  repeated BlockDescriptor BD = 1 [ (gogoproto.nullable) = false ];
+  repeated BlockDescriptor bd = 1 [ (gogoproto.nullable) = false ];
 }

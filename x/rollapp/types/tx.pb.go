@@ -175,7 +175,8 @@ type MsgUpdateState struct {
 	// version is the version of the rollapp
 	Version uint64 `protobuf:"varint,6,opt,name=version,proto3" json:"version,omitempty"`
 	// BDs is a list of block description objects (one per block)
-	// the list must be ordered by height, starting from startHeight to startHeight+numBlocks-1
+	// the list must be ordered by height, starting from startHeight to
+	// startHeight+numBlocks-1
 	BDs BlockDescriptors `protobuf:"bytes,7,opt,name=BDs,proto3" json:"BDs"`
 }
 
@@ -297,7 +298,8 @@ func (m *MsgUpdateStateResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateStateResponse proto.InternalMessageInfo
 
-// MsgRollappGenesisEvent is the message type for triggering the genesis event of the rollapp
+// MsgRollappGenesisEvent is the message type for triggering the genesis event
+// of the rollapp
 type MsgRollappGenesisEvent struct {
 	// address is the bech32-encoded address of the sender
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`

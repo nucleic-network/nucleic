@@ -31,20 +31,20 @@ Here is a struct of a RollApp:
 
 ```protobuf
 message Rollapp {
-  string rollappId = 1;
+  string rollapp_id = 1;
   string creator = 2;
   // version is the software and configuration version.
   // starts from 1 and increases by one on every MsgUpdateState
   uint64 version = 3;
-  // maxSequencers is the maximum number of sequencers.
-  uint64 maxSequencers = 4;
-  // permissionedAddresses is a bech32-encoded address list of the sequencers
-  // that are allowed to serve this rollappId. In the case of an empty list, the
+  // max_sequencers is the maximum number of sequencers.
+  uint64 max_sequencers = 4;
+  // permissioned_addresses is a bech32-encoded address list of the sequencers
+  // that are allowed to serve this rollapp_id. In the case of an empty list, the
   // rollapp is considered permissionless.
-  repeated string permissionedAddresses = 5;
-  // tokenMetadata is a list of TokenMetadata that are registered on this
+  repeated string permissioned_addresses = 5;
+  // token_metadata is a list of TokenMetadata that are registered on this
   // rollapp
-  repeated TokenMetadata tokenMetadata = 6;
+  repeated TokenMetadata token_metadata = 6;
   // genesis_state is a partial repr of the state the hub can expect the rollapp
   // to be in upon genesis
   RollappGenesisState genesis_state = 7 [ (gogoproto.nullable) = false ];
@@ -54,8 +54,6 @@ message Rollapp {
   bool frozen = 9;
 }
 ```
-
-
 
 ## Events
 

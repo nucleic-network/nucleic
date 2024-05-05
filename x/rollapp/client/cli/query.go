@@ -19,5 +19,12 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
+	cmd.AddCommand(CmdQueryParams())
+	cmd.AddCommand(CmdQueryLatestHeight())
+	cmd.AddCommand(CmdQueryLatestStateInfoIndex())
+	cmd.AddCommand(CmdQueryStateInfo())
+	cmd.AddCommand(CmdQueryRollapp())
+	cmd.AddCommand(CmdQueryListRollapp())
+
 	return cmd
 }

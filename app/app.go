@@ -148,6 +148,10 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+
+	"github.com/eve-network/eve/x/rollapp"
+	rollappkeeper "github.com/eve-network/eve/x/rollapp/keeper"
+	rollapptypes "github.com/eve-network/eve/x/rollapp/types"
 )
 
 const appName = "EveApp"
@@ -262,6 +266,8 @@ type EveApp struct {
 
 	TokenFactoryKeeper tokenfactorykeeper.Keeper
 
+	RollappKeeper rollappkeeper.Keeper
+
 	// the module manager
 	ModuleManager      *module.Manager
 	BasicModuleManager module.BasicManager
@@ -326,6 +332,7 @@ func NewEveApp(
 		icacontrollertypes.StoreKey, tokenfactorytypes.StoreKey,
 		ibchookstypes.StoreKey,
 		alliancemoduletypes.StoreKey,
+		rollapptypes.StoreKey,
 	)
 
 	tkeys := storetypes.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -692,6 +699,18 @@ func NewEveApp(
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
+	app.RollappKeeper = *rollappkeeper.NewKeeper(
+		appCodec,
+		keys[rollapptypes.StoreKey],
+		keys[rollapptypes.MemStoreKey],
+		app.GetSubspace(rollapptypes.ModuleName),
+		app.IBCKeeper.ClientKeeper,
+		app.TransferKeeper,
+		app.IBCKeeper.ChannelKeeper,
+		app.BankKeeper,
+		app.Deno
+	)
+
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
 	if err != nil {
 		panic(fmt.Sprintf("error while reading wasm config: %s", err))
@@ -764,6 +783,9 @@ func NewEveApp(
 		// sdk
 		crisis.NewAppModule(app.CrisisKeeper, skipGenesisInvariants, app.GetSubspace(crisistypes.ModuleName)), // always be last to make sure that it checks for all invariants and not only part of them,
 		tokenfactory.NewAppModule(app.TokenFactoryKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(tokenfactorytypes.ModuleName)),
+
+		// nucleic module
+		rollapp.NewAppModule(appCodec, app.RollappKeeper),
 	)
 
 	// BasicModuleManager defines the module BasicManager is in charge of setting up basic,
@@ -816,6 +838,7 @@ func NewEveApp(
 		wasmtypes.ModuleName,
 		tokenfactorytypes.ModuleName,
 		alliancemoduletypes.ModuleName,
+		rollapptypes.ModuleName,
 	)
 
 	app.ModuleManager.SetOrderEndBlockers(
@@ -834,7 +857,9 @@ func NewEveApp(
 		ibchookstypes.ModuleName,
 		wasm08types.ModuleName,
 		wasmtypes.ModuleName,
-		tokenfactorytypes.ModuleName, alliancemoduletypes.ModuleName,
+		tokenfactorytypes.ModuleName,
+		alliancemoduletypes.ModuleName,
+		rollapptypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -880,6 +905,8 @@ func NewEveApp(
 		wasmtypes.ModuleName,
 		tokenfactorytypes.ModuleName,
 		alliancemoduletypes.ModuleName,
+
+		rollapptypes.ModuleName,
 	}
 	app.ModuleManager.SetOrderInitGenesis(genesisModuleOrder...)
 	app.ModuleManager.SetOrderExportGenesis(genesisModuleOrder...)
@@ -1272,6 +1299,9 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(tokenfactorytypes.ModuleName).WithKeyTable(tokenfactorytypes.ParamKeyTable())
 	paramsKeeper.Subspace(wasmtypes.ModuleName)
 	paramsKeeper.Subspace(alliancemoduletypes.ModuleName)
+
+	// register nucleic module key tables
+	paramsKeeper.Subspace(rollapptypes.ModuleName)
 
 	return paramsKeeper
 }

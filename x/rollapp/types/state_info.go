@@ -6,7 +6,17 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func NewStateInfo(rollappId string, newIndex uint64, creator string, startHeight, numBlocks uint64, daPath string, version, height uint64, bds BlockDescriptors) *StateInfo {
+func NewStateInfo(
+	rollappId string,
+	newIndex uint64,
+	creator string,
+	startHeight,
+	numBlocks uint64,
+	daPath string,
+	version uint64,
+	height uint64,
+	blockDescs BlockDescriptors,
+) *StateInfo {
 	stateInfoIndex := StateInfoIndex{RollappId: rollappId, Index: newIndex}
 	status := Status_PENDING
 	return &StateInfo{
@@ -18,7 +28,7 @@ func NewStateInfo(rollappId string, newIndex uint64, creator string, startHeight
 		Version:        version,
 		CreationHeight: height,
 		Status:         status,
-		Bds:            bds,
+		BlockDescs:     blockDescs,
 	}
 }
 

@@ -1,0 +1,8 @@
+syntax = "proto3";
+package nucleic.denommetadata;
+
+option go_package = "github.com/nucleic-network/nucleic/x/denommetadata/types";
+
+// GenesisState defines the denommetadata module's various parameters when first
+// initialized
+message GenesisState {}

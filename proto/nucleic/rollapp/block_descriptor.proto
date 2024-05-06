@@ -16,5 +16,5 @@ message BlockDescriptor {
 
 // BlockDescriptors defines list of BlockDescriptor.
 message BlockDescriptors {
-  repeated BlockDescriptor bd = 1 [ (gogoproto.nullable) = false ];
+  repeated BlockDescriptor block_descs = 1 [ (gogoproto.nullable) = false ];
 }

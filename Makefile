@@ -156,6 +156,20 @@ test-system: install
 
 test-wasm:
 	@bash ./scripts/wasm/test_wasm.sh
+	
+###############################################################################
+###                             Interchain test                             ###
+###############################################################################
+
+# Executes start chain tests via interchaintest
+ictest-start-cosmos:
+	cd tests/interchaintest && go test -race -v -run TestStartEve .	
+
+ictest-basic-cosmos:
+	cd tests/interchaintest && go test -race -v -run TestBasicEve .		
+
+ictest-ibc-transfer:
+	cd tests/interchaintest && go test -race -v -run TestEveGaiaIBCTransfer .	
 
 ###############################################################################
 ###                                Linting                                  ###

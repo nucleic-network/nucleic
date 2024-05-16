@@ -33,7 +33,7 @@ func TestEveGaiaIBCTransfer(t *testing.T) {
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
 		{
-			Name:          "eve",
+			Name:          "Eve",
 			ChainConfig:   EveConfig,
 			NumValidators: &numVals,
 			NumFullNodes:  &numFullNodes,
@@ -155,7 +155,7 @@ func TestEveGaiaIBCTransfer(t *testing.T) {
 	err = testutil.WaitForBlocks(ctx, 10, eve)
 	require.NoError(t, err)
 
-	// Get the IBC denom for ppica on Gaia
+	// Get the IBC denom for eve on Gaia
 	eveTokenDenom := transfertypes.GetPrefixedDenom(channel.Counterparty.PortID, channel.Counterparty.ChannelID, eve.Config().Denom)
 	eveIBCDenom := transfertypes.ParseDenomTrace(eveTokenDenom).IBCDenom()
 

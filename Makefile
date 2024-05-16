@@ -78,6 +78,9 @@ include contrib/devtools/Makefile
 
 all: install lint test
 
+docker-build-debug:
+	@DOCKER_BUILDKIT=1 docker build -t centauri:debug -f Dockerfile .
+
 build: go.sum
 ifeq ($(OS),Windows_NT)
 	$(error eved server not supported. Use "make build-windows-client" for client)

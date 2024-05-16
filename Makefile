@@ -79,7 +79,7 @@ include contrib/devtools/Makefile
 all: install lint test
 
 docker-build-debug:
-	@DOCKER_BUILDKIT=1 docker build -t centauri:debug -f Dockerfile .
+	@DOCKER_BUILDKIT=1 docker build -t eve:debug -f Dockerfile .
 
 build: go.sum
 ifeq ($(OS),Windows_NT)

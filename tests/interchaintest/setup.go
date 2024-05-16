@@ -30,7 +30,7 @@ var (
 		Bin:                 "eved",
 		Bech32Prefix:        "eve",
 		Denom:               "stake",
-		CoinType:            "1811",
+		CoinType:            "118",
 		GasPrices:           "0.0stake",
 		GasAdjustment:       1.1,
 		TrustingPeriod:      "112h",

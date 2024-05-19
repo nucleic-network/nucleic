@@ -15,8 +15,7 @@ func DefaultGenesis() *GenesisState {
 		LatestStateInfoIndexList:           []StateInfoIndex{},
 		LatestFinalizedStateIndexList:      []StateInfoIndex{},
 		BlockHeightToFinalizationQueueList: []BlockHeightToFinalizationQueue{},
-		// this line is used by starport scaffolding # genesis/types/default
-		Params: DefaultParams(),
+		Params:                             DefaultParams(),
 	}
 }
 

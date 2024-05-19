@@ -153,6 +153,7 @@ import (
 	rollappkeeper "github.com/eve-network/eve/x/rollapp/keeper"
 	rollapptypes "github.com/eve-network/eve/x/rollapp/types"
 
+	"github.com/eve-network/eve/x/denommetadata"
 	denommetadatakeeper "github.com/eve-network/eve/x/denommetadata/keeper"
 	denommetadatatypes "github.com/eve-network/eve/x/denommetadata/types"
 )
@@ -795,6 +796,7 @@ func NewEveApp(
 		tokenfactory.NewAppModule(app.TokenFactoryKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(tokenfactorytypes.ModuleName)),
 
 		// nucleic module
+		denommetadata.NewAppModule(*app.DenomMetadataKeeper, app.BankKeeper),
 		rollapp.NewAppModule(appCodec, app.RollappKeeper),
 	)
 
@@ -848,6 +850,7 @@ func NewEveApp(
 		wasmtypes.ModuleName,
 		tokenfactorytypes.ModuleName,
 		alliancemoduletypes.ModuleName,
+		denommetadatatypes.ModuleName,
 		rollapptypes.ModuleName,
 	)
 
@@ -869,6 +872,7 @@ func NewEveApp(
 		wasmtypes.ModuleName,
 		tokenfactorytypes.ModuleName,
 		alliancemoduletypes.ModuleName,
+		denommetadatatypes.ModuleName,
 		rollapptypes.ModuleName,
 	)
 
@@ -1313,7 +1317,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 
 	// register nucleic module key tables
 	paramsKeeper.Subspace(denommetadatatypes.ModuleName)
-	paramsKeeper.Subspace(rollapptypes.ModuleName)
+	paramsKeeper.Subspace(rollapptypes.ModuleName).WithKeyTable(rollapptypes.ParamKeyTable())
 
 	return paramsKeeper
 }

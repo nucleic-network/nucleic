@@ -4,12 +4,16 @@ package nucleic.rollapp;
 option go_package = "github.com/nucleic-network/nucleic/x/rollapp/types";
 
 import "gogoproto/gogo.proto";
+import "cosmos/msg/v1/msg.proto";
 import "nucleic/rollapp/block_descriptor.proto";
 import "nucleic/rollapp/bank.proto";
 import "nucleic/rollapp/rollapp.proto";
 
+
 // Msg defines the Msg service.
 service Msg {
+  option (cosmos.msg.v1.service) = true;
+
   rpc CreateRollapp(MsgCreateRollapp) returns (MsgCreateRollappResponse);
   rpc UpdateState(MsgUpdateState) returns (MsgUpdateStateResponse);
   rpc TriggerGenesisEvent(MsgRollappGenesisEvent)

@@ -23,6 +23,7 @@ var (
 	_ module.HasGenesisBasics = AppModuleBasic{}
 
 	_ appmodule.AppModule        = AppModule{}
+	_ appmodule.HasEndBlocker    = AppModule{}
 	_ module.HasConsensusVersion = AppModule{}
 	_ module.HasGenesis          = AppModule{}
 	_ module.HasServices         = AppModule{}
@@ -103,7 +104,7 @@ func (a AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, gs json.Raw
 
 // ValidateGenesis implements module.HasGenesis.
 func (a AppModule) ValidateGenesis(codec.JSONCodec, client.TxEncodingConfig, json.RawMessage) error {
-	panic("unimplemented")
+	return nil
 }
 
 // ConsensusVersion implements module.HasConsensusVersion.
@@ -117,52 +118,46 @@ func (a AppModule) IsAppModule() {
 
 // IsOnePerModuleType implements appmodule.AppModule.
 func (a AppModule) IsOnePerModuleType() {
-	panic("unimplemented")
 }
 
 // EndBlock implements appmodule.HasEndBlocker.
-func (a *AppModule) EndBlock(context.Context) error {
-	panic("unimplemented")
+func (a AppModule) EndBlock(context.Context) error {
+	return nil
 }
 
 // BeginBlock implements appmodule.HasBeginBlocker.
-func (a *AppModule) BeginBlock(context.Context) error {
-	panic("unimplemented")
+func (a AppModule) BeginBlock(context.Context) error {
+	return nil
 }
 
 // GenerateGenesisState implements module.AppModuleSimulation.
-func (a *AppModule) GenerateGenesisState(input *module.SimulationState) {
-	panic("unimplemented")
+func (a AppModule) GenerateGenesisState(input *module.SimulationState) {
 }
 
 // RegisterStoreDecoder implements module.AppModuleSimulation.
-func (a *AppModule) RegisterStoreDecoder(simulation.StoreDecoderRegistry) {
-	panic("unimplemented")
+func (a AppModule) RegisterStoreDecoder(simulation.StoreDecoderRegistry) {
 }
 
 // WeightedOperations implements module.AppModuleSimulation.
-func (a *AppModule) WeightedOperations(simState module.SimulationState) []simulation.WeightedOperation {
-	panic("unimplemented")
+func (a AppModule) WeightedOperations(simState module.SimulationState) []simulation.WeightedOperation {
+	return []simulation.WeightedOperation{}
 }
 
 // Name implements module.AppModuleBasic.
-func (a *AppModule) Name() string {
+func (a AppModule) Name() string {
 	return types.ModuleName
 }
 
 // RegisterGRPCGatewayRoutes implements module.AppModuleBasic.
-func (a *AppModule) RegisterGRPCGatewayRoutes(client.Context, *runtime.ServeMux) {
-	panic("unimplemented")
+func (a AppModule) RegisterGRPCGatewayRoutes(client.Context, *runtime.ServeMux) {
 }
 
 // RegisterInterfaces implements module.AppModuleBasic.
-func (a *AppModule) RegisterInterfaces(cdctypes.InterfaceRegistry) {
-	panic("unimplemented")
+func (a AppModule) RegisterInterfaces(cdctypes.InterfaceRegistry) {
 }
 
 // RegisterLegacyAminoCodec implements module.AppModuleBasic.
-func (a *AppModule) RegisterLegacyAminoCodec(*codec.LegacyAmino) {
-	panic("unimplemented")
+func (a AppModule) RegisterLegacyAminoCodec(*codec.LegacyAmino) {
 }
 
 func NewAppModule(

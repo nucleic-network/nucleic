@@ -4,6 +4,7 @@ package nucleic.rollapp;
 option go_package = "github.com/nucleic-network/nucleic/x/rollapp/types";
 
 import "gogoproto/gogo.proto";
+import "cosmos/msg/v1/msg.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "nucleic/rollapp/params.proto";
@@ -12,6 +13,8 @@ import "nucleic/rollapp/state_info.proto";
 
 // Query defines the gRPC querier service.
 service Query {
+  option (cosmos.msg.v1.service) = true;
+
   // Parameters queries the parameters of the module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/nucleic/rollapp/params";

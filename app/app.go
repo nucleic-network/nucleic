@@ -152,6 +152,9 @@ import (
 	"github.com/eve-network/eve/x/rollapp"
 	rollappkeeper "github.com/eve-network/eve/x/rollapp/keeper"
 	rollapptypes "github.com/eve-network/eve/x/rollapp/types"
+
+	denommetadatakeeper "github.com/eve-network/eve/x/denommetadata/keeper"
+	denommetadatatypes "github.com/eve-network/eve/x/denommetadata/types"
 )
 
 const appName = "EveApp"
@@ -268,6 +271,8 @@ type EveApp struct {
 
 	RollappKeeper rollappkeeper.Keeper
 
+	DenomMetadataKeeper *denommetadatakeeper.Keeper
+
 	// the module manager
 	ModuleManager      *module.Manager
 	BasicModuleManager module.BasicManager
@@ -332,6 +337,7 @@ func NewEveApp(
 		icacontrollertypes.StoreKey, tokenfactorytypes.StoreKey,
 		ibchookstypes.StoreKey,
 		alliancemoduletypes.StoreKey,
+		denommetadatatypes.ModuleName,
 		rollapptypes.StoreKey,
 	)
 
@@ -699,6 +705,8 @@ func NewEveApp(
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
+	app.DenomMetadataKeeper = denommetadatakeeper.NewKeeper(app.BankKeeper)
+
 	app.RollappKeeper = *rollappkeeper.NewKeeper(
 		appCodec,
 		keys[rollapptypes.StoreKey],
@@ -708,7 +716,8 @@ func NewEveApp(
 		app.TransferKeeper,
 		app.IBCKeeper.ChannelKeeper,
 		app.BankKeeper,
-		app.Deno
+		app.DenomMetadataKeeper,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
@@ -906,6 +915,7 @@ func NewEveApp(
 		tokenfactorytypes.ModuleName,
 		alliancemoduletypes.ModuleName,
 
+		denommetadatatypes.ModuleName,
 		rollapptypes.ModuleName,
 	}
 	app.ModuleManager.SetOrderInitGenesis(genesisModuleOrder...)
@@ -1301,6 +1311,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(alliancemoduletypes.ModuleName)
 
 	// register nucleic module key tables
+	paramsKeeper.Subspace(denommetadatatypes.ModuleName)
 	paramsKeeper.Subspace(rollapptypes.ModuleName)
 
 	return paramsKeeper

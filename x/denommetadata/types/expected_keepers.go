@@ -1,6 +1,8 @@
 package types
 
 import (
+	"context"
+
 	tmbytes "github.com/cometbft/cometbft/libs/bytes"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -20,8 +22,8 @@ type ChannelKeeper interface {
 
 // BankKeeper defines the expected interface needed
 type BankKeeper interface {
-	HasDenomMetaData(ctx sdk.Context, denom string) bool
-	SetDenomMetaData(ctx sdk.Context, denomMetaData types.Metadata)
+	HasDenomMetaData(ctx context.Context, denom string) bool
+	SetDenomMetaData(ctx context.Context, denomMetaData types.Metadata)
 }
 
 type RollappKeeper interface {

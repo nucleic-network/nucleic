@@ -78,6 +78,9 @@ include contrib/devtools/Makefile
 
 all: install lint test
 
+docker-build-debug:
+	@DOCKER_BUILDKIT=1 docker build -t eve:debug -f Dockerfile .
+
 build: go.sum
 ifeq ($(OS),Windows_NT)
 	$(error eved server not supported. Use "make build-windows-client" for client)
@@ -156,6 +159,20 @@ test-system: install
 
 test-wasm:
 	@bash ./scripts/wasm/test_wasm.sh
+	
+###############################################################################
+###                             Interchain test                             ###
+###############################################################################
+
+# Executes start chain tests via interchaintest
+ictest-start-cosmos:
+	cd tests/interchaintest && go test -race -v -run TestStartEve .	
+
+ictest-basic-cosmos:
+	cd tests/interchaintest && go test -race -v -run TestBasicEve .		
+
+ictest-ibc-transfer:
+	cd tests/interchaintest && go test -race -v -run TestEveGaiaIBCTransfer .	
 
 ###############################################################################
 ###                                Linting                                  ###

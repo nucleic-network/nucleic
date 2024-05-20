@@ -1,38 +1,88 @@
-FROM golang:1.21-alpine3.18 as builder
+ARG GO_VERSION="1.22.1"
+ARG RUNNER_IMAGE="gcr.io/distroless/static-debian11"
+ARG BUILD_TAGS="netgo,ledger,muslc"
 
-ARG LIBWASM_VERSION
-ARG LIBWASM_CHECKSUM
+# --------------------------------------------------------
+# Builder
+# --------------------------------------------------------
 
-RUN test -n "${LIBWASM_VERSION}"
-RUN test -n "${LIBWASM_CHECKSUM}"
+FROM golang:${GO_VERSION}-alpine3.18 as builder
 
-RUN set -eux; apk add --no-cache git libusb-dev linux-headers gcc musl-dev make;
+ARG GIT_VERSION
+ARG GIT_COMMIT
+ARG BUILD_TAGS
 
-ENV GOPATH=""
+RUN apk add --no-cache \
+    ca-certificates \
+    build-base \
+    linux-headers 
+
+# Download go dependencies
+WORKDIR /eve
+COPY go.mod go.sum ./
+RUN --mount=type=cache,target=/root/.cache/go-build \
+    --mount=type=cache,target=/root/go/pkg/mod \
+    go mod download 
 
 # Grab the static library and copy it to location that will be found by the linker flag `-lwasmvm_muslc`.
-ADD https://github.com/CosmWasm/wasmvm/releases/download/${LIBWASM_VERSION}/libwasmvm_muslc.x86_64.a /lib/libwasmvm_muslc.x86_64.a
-RUN sha256sum /lib/libwasmvm_muslc.x86_64.a | grep ${LIBWASM_CHECKSUM}
-RUN cp /lib/libwasmvm_muslc.x86_64.a /lib/libwasmvm_muslc.a
+RUN ARCH=$(uname -m) && WASMVM_VERSION=$(go list -m all | grep github.com/CosmWasm/wasmvm | awk '{print $2}' | tail -n 1) && \ 
+    wget https://github.com/CosmWasm/wasmvm/releases/download/$WASMVM_VERSION/libwasmvm_muslc.$ARCH.a \
+    -O /lib/libwasmvm_muslc.$ARCH.a && \
+    # verify checksum
+    wget https://github.com/CosmWasm/wasmvm/releases/download/$WASMVM_VERSION/checksums.txt -O /tmp/checksums.txt && \
+    sha256sum /lib/libwasmvm_muslc.$ARCH.a | grep $(cat /tmp/checksums.txt | grep libwasmvm_muslc.$ARCH | cut -d ' ' -f 1)
 
-# Copy relevant files before go mod download. Replace directives to local paths break if local
-# files are not copied before go mod download.
-ADD internal internal
-ADD testing testing
-ADD modules modules
-ADD LICENSE LICENSE
+# Copy the remaining files
+COPY . .      
 
-COPY go.mod .
-COPY go.sum .
+# Build eved binary
+RUN --mount=type=cache,target=/root/.cache/go-build \
+    --mount=type=cache,target=/root/go/pkg/mod \
+    GOWORK=off go build \
+    -mod=readonly \
+    -tags "netgo,ledger,muslc" \
+    -ldflags \
+    "-X github.com/cosmos/cosmos-sdk/version.Name="eve" \
+    -X github.com/cosmos/cosmos-sdk/version.AppName="eved" \
+    -X github.com/cosmos/cosmos-sdk/version.Version=${GIT_VERSION} \
+    -X github.com/cosmos/cosmos-sdk/version.Commit=${GIT_COMMIT} \
+    -X github.com/cosmos/cosmos-sdk/version.BuildTags=${BUILD_TAGS} \
+    -w -s -linkmode=external -extldflags '-Wl,-z,muldefs -static'" \
+    -trimpath \
+    -o /eve/build/eved \
+    /eve/cmd/eved
 
-WORKDIR /go/modules/light-clients/08-wasm
+# --------------------------------------------------------
+# toolkit
+# --------------------------------------------------------
 
-RUN go mod download
+FROM busybox:1.35.0-uclibc as busybox
+RUN addgroup --gid 1025 -S eve && adduser --uid 1025 -S eve -G eve    
 
-RUN GOOS=linux GOARCH=amd64 go build -mod=readonly -tags "netgo ledger muslc" -ldflags '-X github.com/cosmos/cosmos-sdk/version.Name=sim -X github.com/cosmos/cosmos-sdk/version.AppName=simd -X github.com/cosmos/cosmos-sdk/version.Version= -X github.com/cosmos/cosmos-sdk/version.Commit= -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo ledger muslc," -w -s -linkmode=external -extldflags "-Wl,-z,muldefs -static"' -trimpath -o /go/build/ ./...
+# --------------------------------------------------------
+# Runner
+# --------------------------------------------------------
 
-FROM alpine:3.18
+FROM ${RUNNER_IMAGE}
 
-COPY --from=builder /go/build/simd /bin/simd
+COPY --from=busybox:1.35.0-uclibc /bin/sh /bin/sh
 
-ENTRYPOINT ["simd"]
+COPY --from=builder /eve/build/eved /bin/eved
+
+# Install eve user
+COPY --from=busybox /etc/passwd /etc/passwd
+COPY --from=busybox --chown=1025:1025 /home/eve /home/eve
+
+ENV HOME /eve
+WORKDIR $HOME
+
+# rest server
+EXPOSE 1317
+# tendermint p2p
+EXPOSE 26656
+# tendermint rpc
+EXPOSE 26657
+# grpc
+EXPOSE 9090
+
+ENTRYPOINT ["eved"]

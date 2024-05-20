@@ -1,0 +1,20 @@
+syntax = "proto3";
+package nucleic.rollapp;
+
+option go_package = "github.com/nucleic-network/nucleic/x/rollapp/types";
+
+import "gogoproto/gogo.proto";
+
+// BlockDescriptor defines a single rollapp chain block description.
+message BlockDescriptor {
+  // height is the height of the block
+  uint64 height = 1;
+  // state_root is a 32 byte array of the hash of the block (state root of the
+  // block)
+  bytes state_root = 2;
+}
+
+// BlockDescriptors defines list of BlockDescriptor.
+message BlockDescriptors {
+  repeated BlockDescriptor block_descs = 1 [ (gogoproto.nullable) = false ];
+}

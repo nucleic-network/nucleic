@@ -1,0 +1,23 @@
+syntax = "proto3";
+package nucleic.rollapp;
+
+option go_package = "github.com/nucleic-network/nucleic/x/rollapp/types";
+
+import "gogoproto/gogo.proto";
+import "nucleic/rollapp/params.proto";
+import "nucleic/rollapp/rollapp.proto";
+import "nucleic/rollapp/state_info.proto";
+
+// GenesisState defines the rollapp module's genesis state.
+message GenesisState {
+  Params params = 1 [ (gogoproto.nullable) = false ];
+  repeated Rollapp rollapp_list = 2 [ (gogoproto.nullable) = false ];
+  repeated StateInfo state_info_list = 3 [ (gogoproto.nullable) = false ];
+  repeated StateInfoIndex latest_state_info_index_list = 4
+      [ (gogoproto.nullable) = false ];
+  repeated StateInfoIndex latest_finalized_state_index_list = 5
+      [ (gogoproto.nullable) = false ];
+  repeated BlockHeightToFinalizationQueue
+      block_height_to_finalization_queue_list = 6
+      [ (gogoproto.nullable) = false ];
+}

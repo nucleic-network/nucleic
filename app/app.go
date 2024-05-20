@@ -148,6 +148,14 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+
+	"github.com/eve-network/eve/x/rollapp"
+	rollappkeeper "github.com/eve-network/eve/x/rollapp/keeper"
+	rollapptypes "github.com/eve-network/eve/x/rollapp/types"
+
+	"github.com/eve-network/eve/x/denommetadata"
+	denommetadatakeeper "github.com/eve-network/eve/x/denommetadata/keeper"
+	denommetadatatypes "github.com/eve-network/eve/x/denommetadata/types"
 )
 
 const appName = "EveApp"
@@ -262,6 +270,10 @@ type EveApp struct {
 
 	TokenFactoryKeeper tokenfactorykeeper.Keeper
 
+	RollappKeeper rollappkeeper.Keeper
+
+	DenomMetadataKeeper *denommetadatakeeper.Keeper
+
 	// the module manager
 	ModuleManager      *module.Manager
 	BasicModuleManager module.BasicManager
@@ -326,6 +338,8 @@ func NewEveApp(
 		icacontrollertypes.StoreKey, tokenfactorytypes.StoreKey,
 		ibchookstypes.StoreKey,
 		alliancemoduletypes.StoreKey,
+		denommetadatatypes.ModuleName,
+		rollapptypes.StoreKey,
 	)
 
 	tkeys := storetypes.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -678,6 +692,7 @@ func NewEveApp(
 		app.AccountKeeper,
 		scopedICAHostKeeper,
 		app.MsgServiceRouter(),
+		app.GRPCQueryRouter(),
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	app.ICAControllerKeeper = icacontrollerkeeper.NewKeeper(
@@ -689,6 +704,21 @@ func NewEveApp(
 		app.IBCKeeper.PortKeeper,
 		scopedICAControllerKeeper,
 		app.MsgServiceRouter(),
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+	)
+
+	app.DenomMetadataKeeper = denommetadatakeeper.NewKeeper(app.BankKeeper)
+
+	app.RollappKeeper = *rollappkeeper.NewKeeper(
+		appCodec,
+		keys[rollapptypes.StoreKey],
+		keys[rollapptypes.MemStoreKey],
+		app.GetSubspace(rollapptypes.ModuleName),
+		app.IBCKeeper.ClientKeeper,
+		app.TransferKeeper,
+		app.IBCKeeper.ChannelKeeper,
+		app.BankKeeper,
+		app.DenomMetadataKeeper,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
@@ -764,6 +794,10 @@ func NewEveApp(
 		// sdk
 		crisis.NewAppModule(app.CrisisKeeper, skipGenesisInvariants, app.GetSubspace(crisistypes.ModuleName)), // always be last to make sure that it checks for all invariants and not only part of them,
 		tokenfactory.NewAppModule(app.TokenFactoryKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(tokenfactorytypes.ModuleName)),
+
+		// nucleic module
+		denommetadata.NewAppModule(*app.DenomMetadataKeeper, app.BankKeeper),
+		rollapp.NewAppModule(appCodec, app.RollappKeeper),
 	)
 
 	// BasicModuleManager defines the module BasicManager is in charge of setting up basic,
@@ -816,6 +850,8 @@ func NewEveApp(
 		wasmtypes.ModuleName,
 		tokenfactorytypes.ModuleName,
 		alliancemoduletypes.ModuleName,
+		denommetadatatypes.ModuleName,
+		rollapptypes.ModuleName,
 	)
 
 	app.ModuleManager.SetOrderEndBlockers(
@@ -834,7 +870,10 @@ func NewEveApp(
 		ibchookstypes.ModuleName,
 		wasm08types.ModuleName,
 		wasmtypes.ModuleName,
-		tokenfactorytypes.ModuleName, alliancemoduletypes.ModuleName,
+		tokenfactorytypes.ModuleName,
+		alliancemoduletypes.ModuleName,
+		denommetadatatypes.ModuleName,
+		rollapptypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -880,6 +919,9 @@ func NewEveApp(
 		wasmtypes.ModuleName,
 		tokenfactorytypes.ModuleName,
 		alliancemoduletypes.ModuleName,
+
+		denommetadatatypes.ModuleName,
+		rollapptypes.ModuleName,
 	}
 	app.ModuleManager.SetOrderInitGenesis(genesisModuleOrder...)
 	app.ModuleManager.SetOrderExportGenesis(genesisModuleOrder...)
@@ -1272,6 +1314,10 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(tokenfactorytypes.ModuleName).WithKeyTable(tokenfactorytypes.ParamKeyTable())
 	paramsKeeper.Subspace(wasmtypes.ModuleName)
 	paramsKeeper.Subspace(alliancemoduletypes.ModuleName)
+
+	// register nucleic module key tables
+	paramsKeeper.Subspace(denommetadatatypes.ModuleName)
+	paramsKeeper.Subspace(rollapptypes.ModuleName).WithKeyTable(rollapptypes.ParamKeyTable())
 
 	return paramsKeeper
 }

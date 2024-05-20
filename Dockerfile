@@ -1,4 +1,4 @@
-ARG GO_VERSION="1.21.1"
+ARG GO_VERSION="1.22.1"
 ARG RUNNER_IMAGE="gcr.io/distroless/static-debian11"
 ARG BUILD_TAGS="netgo,ledger,muslc"
 

@@ -166,13 +166,13 @@ test-wasm:
 
 # Executes start chain tests via interchaintest
 ictest-start-cosmos:
-	cd tests/interchaintest && go test -race -v -run TestStartEve .	
+	cd tests/interchaintest && go test -timeout=25m -race -v -run TestStartEve .	
 
 ictest-basic-cosmos:
-	cd tests/interchaintest && go test -race -v -run TestBasicEve .		
+	cd tests/interchaintest && go test -timeout=25m -race -v -run TestBasicEve .		
 
 ictest-ibc-transfer:
-	cd tests/interchaintest && go test -race -v -run TestEveGaiaIBCTransfer .	
+	cd tests/interchaintest && go test -timeout=25m -race -v -run TestEveGaiaIBCTransfer .	
 
 ###############################################################################
 ###                                Linting                                  ###

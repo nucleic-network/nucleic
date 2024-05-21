@@ -790,8 +790,6 @@ func NewEveApp(
 		transferModule,
 		ibcfee.NewAppModule(app.IBCFeeKeeper),
 		ica.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper),
-		// register light clients on IBC
-		ibctm.AppModuleBasic{},
 		alliancemodule.NewAppModule(appCodec, app.AllianceKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry, app.GetSubspace(alliancemoduletypes.ModuleName)),
 
 		// sdk
@@ -817,6 +815,8 @@ func NewEveApp(
 				},
 			),
 			alliancemoduletypes.ModuleName: alliancemodule.AppModuleBasic{},
+			// register light clients on IBC
+			ibctm.AppModuleBasic{}.Name(): ibctm.AppModuleBasic{},
 			// wasm08types.ModuleName: wasm08.AppModuleBasic{},
 			// wasmtypes.ModuleName:   wasm.AppModuleBasic{},
 		})

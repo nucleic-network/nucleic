@@ -682,6 +682,8 @@ func NewEveApp(
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
+	transferModule := transfer.NewAppModule(app.TransferKeeper)
+
 	app.ICAHostKeeper = icahostkeeper.NewKeeper(
 		appCodec,
 		keys[icahosttypes.StoreKey],
@@ -785,10 +787,11 @@ func NewEveApp(
 		wasm08.NewAppModule(app.Wasm08Keeper),
 		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
 		ibc.NewAppModule(app.IBCKeeper),
-		transfer.NewAppModule(app.TransferKeeper),
+		transferModule,
 		ibcfee.NewAppModule(app.IBCFeeKeeper),
 		ica.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper),
-		ibctm.AppModule{},
+		// register light clients on IBC
+		ibctm.AppModuleBasic{},
 		alliancemodule.NewAppModule(appCodec, app.AllianceKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry, app.GetSubspace(alliancemoduletypes.ModuleName)),
 
 		// sdk
@@ -841,8 +844,8 @@ func NewEveApp(
 		crisistypes.ModuleName,
 		// additional non simd modules
 		capabilitytypes.ModuleName,
-		ibctransfertypes.ModuleName,
 		ibcexported.ModuleName,
+		ibctransfertypes.ModuleName,
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		ibchookstypes.ModuleName,
@@ -863,8 +866,8 @@ func NewEveApp(
 		group.ModuleName,
 		// additional non simd modules
 		capabilitytypes.ModuleName,
-		ibctransfertypes.ModuleName,
 		ibcexported.ModuleName,
+		ibctransfertypes.ModuleName,
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		ibchookstypes.ModuleName,

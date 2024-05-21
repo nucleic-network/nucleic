@@ -816,7 +816,7 @@ func NewEveApp(
 			),
 			alliancemoduletypes.ModuleName: alliancemodule.AppModuleBasic{},
 			// register light clients on IBC
-			ibctm.AppModuleBasic{}.Name(): ibctm.AppModuleBasic{},
+			ibctm.ModuleName: ibctm.AppModuleBasic{},
 			// wasm08types.ModuleName: wasm08.AppModuleBasic{},
 			// wasmtypes.ModuleName:   wasm.AppModuleBasic{},
 		})

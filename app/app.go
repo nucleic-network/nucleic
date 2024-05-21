@@ -43,6 +43,7 @@ import (
 	porttypes "github.com/cosmos/ibc-go/v8/modules/core/05-port/types"
 	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
+	solomachine "github.com/cosmos/ibc-go/v8/modules/light-clients/06-solomachine"
 	ibctm "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
 	"github.com/osmosis-labs/tokenfactory"
 	"github.com/osmosis-labs/tokenfactory/bindings"
@@ -816,6 +817,7 @@ func NewEveApp(
 			),
 			alliancemoduletypes.ModuleName: alliancemodule.AppModuleBasic{},
 			// register light clients on IBC
+			solomachine.ModuleName: solomachine.AppModuleBasic{},
 			ibctm.ModuleName: ibctm.AppModuleBasic{},
 			// wasm08types.ModuleName: wasm08.AppModuleBasic{},
 			// wasmtypes.ModuleName:   wasm.AppModuleBasic{},

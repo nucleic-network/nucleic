@@ -790,9 +790,6 @@ func NewEveApp(
 		ica.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper),
 		alliancemodule.NewAppModule(appCodec, app.AllianceKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry, app.GetSubspace(alliancemoduletypes.ModuleName)),
 
-		// register light clients on IBC
-		ibctm.NewAppModule(ibctm.NewLightClientModule(appCodec, authtypes.NewModuleAddress(govtypes.ModuleName).String())),
-
 		// sdk
 		crisis.NewAppModule(app.CrisisKeeper, skipGenesisInvariants, app.GetSubspace(crisistypes.ModuleName)), // always be last to make sure that it checks for all invariants and not only part of them,
 		tokenfactory.NewAppModule(app.TokenFactoryKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(tokenfactorytypes.ModuleName)),
@@ -816,6 +813,8 @@ func NewEveApp(
 				},
 			),
 			alliancemoduletypes.ModuleName: alliancemodule.AppModuleBasic{},
+			// register light clients on IBC
+			ibctm.ModuleName: ibctm.NewAppModule(ibctm.NewLightClientModule(appCodec, authtypes.NewModuleAddress(govtypes.ModuleName).String())),
 			// wasm08types.ModuleName: wasm08.AppModuleBasic{},
 			// wasmtypes.ModuleName:   wasm.AppModuleBasic{},
 		})

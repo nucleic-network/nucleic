@@ -245,4 +245,7 @@ replace (
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 
 	github.com/terra-money/alliance => github.com/notional-labs/alliance v1.0.1-0.20240503205555-9fb96066d68e
+
+// github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 => github.com/cosmos/ibc-apps/middleware/packet-forward-middleware v0.0.0-20240522065513-ed0e92f61cfa
+
 )

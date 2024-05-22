@@ -668,6 +668,12 @@ func NewEveApp(
 		AddRoute(icahosttypes.SubModuleName, icaHostStack)
 	app.IBCKeeper.SetRouter(ibcRouter)
 
+	clientRouter := app.IBCKeeper.ClientKeeper.GetRouter()
+	tmLightClientModule := ibctm.NewLightClientModule(appCodec, authtypes.NewModuleAddress(govtypes.ModuleName).String())
+	smLightClientModule := solomachine.NewLightClientModule(appCodec)
+	clientRouter.AddRoute(ibctm.ModuleName, &tmLightClientModule)
+	clientRouter.AddRoute(solomachine.ModuleName, &smLightClientModule)
+
 	app.IBCHooksKeeper = ibchookskeeper.NewKeeper(
 		keys[ibchookstypes.StoreKey],
 	)
@@ -805,6 +811,10 @@ func NewEveApp(
 		ica.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper),
 		alliancemodule.NewAppModule(appCodec, app.AllianceKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry, app.GetSubspace(alliancemoduletypes.ModuleName)),
 
+		// ibc light clients
+		ibctm.NewAppModule(tmLightClientModule),
+		solomachine.NewAppModule(smLightClientModule),
+
 		// sdk
 		crisis.NewAppModule(app.CrisisKeeper, skipGenesisInvariants, app.GetSubspace(crisistypes.ModuleName)), // always be last to make sure that it checks for all invariants and not only part of them,
 		tokenfactory.NewAppModule(app.TokenFactoryKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(tokenfactorytypes.ModuleName)),
@@ -831,7 +841,7 @@ func NewEveApp(
 			// register light clients on IBC
 			ibctm.ModuleName: ibctm.AppModuleBasic{},
 			solomachine.ModuleName: solomachine.AppModuleBasic{},
-			wasm08types.ModuleName: wasm08.AppModuleBasic{},
+			//wasm08types.ModuleName: wasm08.AppModuleBasic{},
 			// wasmtypes.ModuleName:   wasm.AppModuleBasic{},
 		})
 	app.BasicModuleManager.RegisterLegacyAminoCodec(legacyAmino)

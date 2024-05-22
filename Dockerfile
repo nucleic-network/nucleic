@@ -53,25 +53,12 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
     /eve/cmd/eved
 
 # --------------------------------------------------------
-# toolkit
-# --------------------------------------------------------
-
-FROM busybox:1.35.0-uclibc as busybox
-RUN addgroup --gid 1025 -S eve && adduser --uid 1025 -S eve -G eve    
-
-# --------------------------------------------------------
 # Runner
 # --------------------------------------------------------
 
 FROM ${RUNNER_IMAGE}
 
-COPY --from=busybox:1.35.0-uclibc /bin/sh /bin/sh
-
 COPY --from=builder /eve/build/eved /bin/eved
-
-# Install eve user
-COPY --from=busybox /etc/passwd /etc/passwd
-COPY --from=busybox --chown=1025:1025 /home/eve /home/eve
 
 ENV HOME /eve
 WORKDIR $HOME

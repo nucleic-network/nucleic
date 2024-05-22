@@ -831,7 +831,7 @@ func NewEveApp(
 			// register light clients on IBC
 			ibctm.ModuleName: ibctm.AppModuleBasic{},
 			solomachine.ModuleName: solomachine.AppModuleBasic{},
-			// wasm08types.ModuleName: wasm08.AppModuleBasic{},
+			wasm08types.ModuleName: wasm08.AppModuleBasic{},
 			// wasmtypes.ModuleName:   wasm.AppModuleBasic{},
 		})
 	app.BasicModuleManager.RegisterLegacyAminoCodec(legacyAmino)

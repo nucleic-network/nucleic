@@ -43,7 +43,6 @@ import (
 	porttypes "github.com/cosmos/ibc-go/v8/modules/core/05-port/types"
 	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
-	solomachine "github.com/cosmos/ibc-go/v8/modules/light-clients/06-solomachine"
 	ibctm "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
 	"github.com/osmosis-labs/tokenfactory"
 	"github.com/osmosis-labs/tokenfactory/bindings"
@@ -670,9 +669,7 @@ func NewEveApp(
 
 	clientRouter := app.IBCKeeper.ClientKeeper.GetRouter()
 	tmLightClientModule := ibctm.NewLightClientModule(appCodec, authtypes.NewModuleAddress(govtypes.ModuleName).String())
-	smLightClientModule := solomachine.NewLightClientModule(appCodec)
 	clientRouter.AddRoute(ibctm.ModuleName, &tmLightClientModule)
-	clientRouter.AddRoute(solomachine.ModuleName, &smLightClientModule)
 
 	app.IBCHooksKeeper = ibchookskeeper.NewKeeper(
 		keys[ibchookstypes.StoreKey],
@@ -836,7 +833,6 @@ func NewEveApp(
 			alliancemoduletypes.ModuleName: alliancemodule.AppModuleBasic{},
 			// register light clients on IBC
 			ibctm.ModuleName: ibctm.NewAppModule(tmLightClientModule),
-			solomachine.ModuleName: solomachine.NewAppModule(smLightClientModule),
 			// wasm08types.ModuleName: wasm08.AppModuleBasic{},
 			// wasmtypes.ModuleName:   wasm.AppModuleBasic{},
 		})

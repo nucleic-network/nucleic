@@ -220,7 +220,7 @@ replace (
 	cosmossdk.io/core => cosmossdk.io/core v0.11.0
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 	github.com/cosmos/ibc-apps/modules/ibc-hooks/v8 => github.com/notional-labs/ibc-apps/modules/ibc-hooks/v8 v8.0.0-20240306102635-57b349e8fd83
-	// github.com/cosmos/ibc-go/modules/light-clients/08-wasm => github.com/notional-labs/ibc-go/modules/light-clients/08-wasm v0.0.0-20240314043527-f53cabfd50c0
+	github.com/cosmos/ibc-go/modules/light-clients/08-wasm => github.com/notional-labs/ibc-go/modules/light-clients/08-wasm v0.0.0-20240314043527-f53cabfd50c0
 
 	github.com/cosmos/ibc-go/v8 => github.com/cosmos/ibc-go/v8 v8.0.0-20240403130056-50d2a087d555
 
@@ -245,4 +245,7 @@ replace (
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 
 	github.com/terra-money/alliance => github.com/notional-labs/alliance v1.0.1-0.20240503205555-9fb96066d68e
+
+// github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 => github.com/cosmos/ibc-apps/middleware/packet-forward-middleware v0.0.0-20240522065513-ed0e92f61cfa
+
 )

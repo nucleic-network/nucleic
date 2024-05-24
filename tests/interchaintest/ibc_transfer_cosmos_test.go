@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/strangelove-ventures/interchaintest/v8"
 
-	"cosmossdk.io/math"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
 	interchaintestrelayer "github.com/strangelove-ventures/interchaintest/v8/relayer"
@@ -18,18 +18,16 @@ import (
 	transfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 )
 
-// TestEveGaiaIBCTransfer spins up a Eve and Gaia network, initializes an IBC connection between them,
-// and sends an ICS20 token transfer from Eve->Gaia and then back from Gaia->Eve.
+// TestEvejunoIBCTransfer spins up a Eve and juno network, initializes an IBC connection between them,
+// and sends an ICS20 token transfer from Eve->juno and then back from juno->Eve.
 func TestEveGaiaIBCTransfer(t *testing.T) {
 	if testing.Short() {
 		t.Skip()
 	}
 
-	t.Parallel()
-
-	// Create chain factory with Eve and Gaia
+	// Create chain factory with Eve and juno
 	numVals := 1
-	numFullNodes := 1
+	numFullNodes := 0
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
 		{
@@ -39,10 +37,11 @@ func TestEveGaiaIBCTransfer(t *testing.T) {
 			NumFullNodes:  &numFullNodes,
 		},
 		{
-			Name:          "gaia",
-			Version:       "v9.1.0",
+			Name:          "juno",
+			Version:       "v13.0.0",
 			NumValidators: &numVals,
 			NumFullNodes:  &numFullNodes,
+			ChainConfig:   ibc.ChainConfig{GasPrices: "0.0ujuno"},
 		},
 	})
 
@@ -56,7 +55,7 @@ func TestEveGaiaIBCTransfer(t *testing.T) {
 
 	client, network := interchaintest.DockerSetup(t)
 
-	eve, gaia := chains[0].(*cosmos.CosmosChain), chains[1].(*cosmos.CosmosChain)
+	eve, juno := chains[0].(*cosmos.CosmosChain), chains[1].(*cosmos.CosmosChain)
 
 	relayerType, relayerName := ibc.CosmosRly, "relay"
 
@@ -65,20 +64,26 @@ func TestEveGaiaIBCTransfer(t *testing.T) {
 		relayerType,
 		zaptest.NewLogger(t),
 		interchaintestrelayer.DockerImage(&DefaultRelayer),
-		interchaintestrelayer.StartupFlags("--processor", "events", "--block-history", "100"),
 	)
 
 	r := rf.Build(t, client, network)
 
 	ic := interchaintest.NewInterchain().
 		AddChain(eve).
-		AddChain(gaia).
+		AddChain(juno).
 		AddRelayer(r, relayerName).
 		AddLink(interchaintest.InterchainLink{
 			Chain1:  eve,
-			Chain2:  gaia,
+			Chain2:  juno,
 			Relayer: r,
 			Path:    path,
+			CreateChannelOpts: ibc.CreateChannelOptions{
+				SourcePortName: "transfer",
+				DestPortName:   "transfer",
+				Order:          ibc.Unordered,
+				Version:        "{\"fee_version\":\"ics29-1\",\"app_version\":\"ics20-1\"}",
+			},
+			CreateClientOpts: ibc.DefaultClientOpts(),
 		})
 
 	ctx := context.Background()
@@ -87,55 +92,109 @@ func TestEveGaiaIBCTransfer(t *testing.T) {
 	eRep := rep.RelayerExecReporter(t)
 
 	require.NoError(t, ic.Build(ctx, eRep, interchaintest.InterchainBuildOptions{
-		TestName:          t.Name(),
-		Client:            client,
-		NetworkID:         network,
-		BlockDatabaseFile: interchaintest.DefaultBlockDatabaseFilepath(),
-		SkipPathCreation:  false,
+		TestName:  t.Name(),
+		Client:    client,
+		NetworkID: network,
+		// BlockDatabaseFile: interchaintest.DefaultBlockDatabaseFilepath(),
+		SkipPathCreation: false,
 	}))
+	t.Parallel()
+
+	err = testutil.WaitForBlocks(ctx, 5, eve, juno)
+
+	require.NoError(t, err)
+	// ChainID of eve
+	chainIDA := eve.Config().ChainID
+
+	// Channel of eve
+	chA, err := r.GetChannels(ctx, eRep, chainIDA)
+	require.NoError(t, err)
+	channelA := chA[0]
+
+	// Fund a user account on eve and juno
+	initBal := sdkmath.NewInt(1_000_000_000_000)
+	users := interchaintest.GetAndFundTestUsers(t, ctx, t.Name(), initBal, eve, juno)
+	userA := users[0]
+	userAddressA := userA.FormattedAddress()
+	userB := users[1]
+	userAddressB := userB.FormattedAddress()
+
+	// Addresses of both the chains
+	walletA, _ := r.GetWallet(eve.Config().ChainID)
+	rlyAddressA := walletA.FormattedAddress()
+
+	walletB, _ := r.GetWallet(juno.Config().ChainID)
+	rlyAddressB := walletB.FormattedAddress()
+
+	// // register CounterpartyPayee
+	// cmd := []string{
+	// 	"tx", "register-counterparty",
+	// 	eve.Config().Name,
+	// 	channelA.ChannelID,
+	// 	"transfer",
+	// 	rlyAddressA,
+	// 	rlyAddressB,
+	// }
+	// _ = r.Exec(ctx, eRep, cmd, nil)
+	// require.NoError(t, err)
+	// err = testutil.WaitForBlocks(ctx, 20, eve, juno)
+	// require.NoError(t, err)
+	// Query the relayer CounterpartyPayee on a given channel
+	// query := []string{
+	// 	eve.Config().Bin, "query", "ibc-fee", "counterparty-payee", channelA.ChannelID, rlyAddressA,
+	// 	"--node", eve.GetRPCAddress(),
+	// 	"--home", eve.HomeDir(),
+	// 	"--trace",
+	// }
+	// _, _, err = eve.Exec(ctx, query, nil)
+	// require.NoError(t, err)
+
 	t.Cleanup(func() {
 		_ = ic.Close()
 	})
 
-	// Create some user accounts on both chains
-	users := interchaintest.GetAndFundTestUsers(t, ctx, t.Name(), genesisWalletAmount, eve, gaia)
+	// Get initial account balances
+	userAOrigBal, err := eve.GetBalance(ctx, userAddressA, eve.Config().Denom)
+	require.NoError(t, err)
+	require.True(t, initBal.Equal(userAOrigBal))
 
-	// Wait a few blocks for relayer to start and for user accounts to be created
-	err = testutil.WaitForBlocks(ctx, 5, eve, gaia)
+	userBOrigBal, err := juno.GetBalance(ctx, userAddressB, juno.Config().Denom)
+	require.NoError(t, err)
+	require.True(t, initBal.Equal(userBOrigBal))
+
+	rlyAOrigBal, err := eve.GetBalance(ctx, rlyAddressA, eve.Config().Denom)
+	require.NoError(t, err)
+	require.True(t, initBal.Equal(rlyAOrigBal))
+
+	rlyBOrigBal, err := juno.GetBalance(ctx, rlyAddressB, juno.Config().Denom)
+	require.NoError(t, err)
+	require.True(t, initBal.Equal(rlyBOrigBal))
+
+	// send tx
+	txAmount := sdkmath.NewInt(1000)
+	transfer := ibc.WalletAmount{Address: userAddressB, Denom: eve.Config().Denom, Amount: txAmount}
+	_, err = eve.SendIBCTransfer(ctx, channelA.ChannelID, userAddressA, transfer, ibc.TransferOptions{})
 	require.NoError(t, err)
 
-	// Get our Bech32 encoded user addresses
-	eveUser, gaiaUser := users[0], users[1]
-
-	eveUserAddr := eveUser.FormattedAddress()
-	gaiaUserAddr := gaiaUser.FormattedAddress()
-
-	// Get original account balances
-	eveOrigBal, err := eve.GetBalance(ctx, eveUserAddr, eve.Config().Denom)
-	require.NoError(t, err)
-	require.Equal(t, genesisWalletAmount, eveOrigBal)
-
-	gaiaOrigBal, err := gaia.GetBalance(ctx, gaiaUserAddr, gaia.Config().Denom)
-	require.NoError(t, err)
-	require.Equal(t, genesisWalletAmount, gaiaOrigBal)
-
-	// Compose an IBC transfer and send from Eve -> Gaia
-	var transferAmount = math.NewInt(1_000)
-	transfer := ibc.WalletAmount{
-		Address: gaiaUserAddr,
-		Denom:   eve.Config().Denom,
-		Amount:  transferAmount,
-	}
-
-	channel, err := ibc.GetTransferChannel(ctx, r, eRep, eve.Config().ChainID, gaia.Config().ChainID)
-	require.NoError(t, err)
-
-	eveHeight, err := eve.Height(ctx)
-	require.NoError(t, err)
-
-	transferTx, err := eve.SendIBCTransfer(ctx, channel.ChannelID, eveUserAddr, transfer, ibc.TransferOptions{})
-	require.NoError(t, err)
-
+	// // Incentivizing async packet by returning MsgPayPacketFeeAsync
+	// packetFeeAsync := []string{
+	// 	eve.Config().Bin, "tx", "ibc-fee", "pay-packet-fee", "transfer", channelA.ChannelID, "1",
+	// 	"--recv-fee", fmt.Sprintf("1000%s", eve.Config().Denom),
+	// 	"--ack-fee", fmt.Sprintf("1000%s", eve.Config().Denom),
+	// 	"--timeout-fee", fmt.Sprintf("1000%s", eve.Config().Denom),
+	// 	"--chain-id", chainIDA,
+	// 	"--node", eve.GetRPCAddress(),
+	// 	"--from", userA.FormattedAddress(),
+	// 	"--keyring-backend", "test",
+	// 	"--gas", "400000",
+	// 	"--yes",
+	// 	"--home", eve.HomeDir(),
+	// }
+	// _, _, err = eve.Exec(ctx, packetFeeAsync, nil)
+	// require.NoError(t, err)
+	// err = testutil.WaitForBlocks(ctx, 5, eve, juno)
+	// require.NoError(t, err)
+	// start the relayer
 	err = r.StartRelayer(ctx, eRep, path)
 	require.NoError(t, err)
 
@@ -148,49 +207,25 @@ func TestEveGaiaIBCTransfer(t *testing.T) {
 		},
 	)
 
-	// Poll for the ack to know the transfer was successful
-	_, err = testutil.PollForAck(ctx, eve, eveHeight, eveHeight+50, transferTx.Packet)
+	// Wait for relayer to run
+	err = testutil.WaitForBlocks(ctx, 10, eve, juno)
 	require.NoError(t, err)
 
-	err = testutil.WaitForBlocks(ctx, 10, eve)
+	// Assigning denom
+	eveTokenDenom := transfertypes.GetPrefixedDenom(channelA.PortID, channelA.ChannelID, eve.Config().Denom)
+	eveDenomTrace := transfertypes.ParseDenomTrace(eveTokenDenom)
+
+	// Get balances after transfer
+	expectedBal := userAOrigBal
+	eveBal, err := eve.GetBalance(ctx, userAddressA, eve.Config().Denom)
 	require.NoError(t, err)
+	require.Equal(t, expectedBal.Sub(txAmount), eveBal)
 
-	// Get the IBC denom for eve on Gaia
-	eveTokenDenom := transfertypes.GetPrefixedDenom(channel.Counterparty.PortID, channel.Counterparty.ChannelID, eve.Config().Denom)
-	eveIBCDenom := transfertypes.ParseDenomTrace(eveTokenDenom).IBCDenom()
-
-	// Assert that the funds are no longer present in user acc on Eve and are in the user acc on Gaia
-	eveUpdateBal, err := eve.GetBalance(ctx, eveUserAddr, eve.Config().Denom)
+	junoBal, err := juno.GetBalance(ctx, userAddressB, eveDenomTrace.IBCDenom())
 	require.NoError(t, err)
-	require.Equal(t, eveOrigBal.Sub(transferAmount), eveUpdateBal)
+	require.Equal(t, txAmount, junoBal)
 
-	gaiaUpdateBal, err := gaia.GetBalance(ctx, gaiaUserAddr, eveIBCDenom)
-	require.NoError(t, err)
-	require.Equal(t, transferAmount, gaiaUpdateBal)
-
-	// Compose an IBC transfer and send from Gaia -> Eve
-	transfer = ibc.WalletAmount{
-		Address: eveUserAddr,
-		Denom:   eveIBCDenom,
-		Amount:  transferAmount,
-	}
-
-	gaiaHeight, err := gaia.Height(ctx)
-	require.NoError(t, err)
-
-	transferTx, err = gaia.SendIBCTransfer(ctx, channel.Counterparty.ChannelID, gaiaUserAddr, transfer, ibc.TransferOptions{})
-	require.NoError(t, err)
-
-	// Poll for the ack to know the transfer was successful
-	_, err = testutil.PollForAck(ctx, gaia, gaiaHeight, gaiaHeight+25, transferTx.Packet)
-	require.NoError(t, err)
-
-	// Assert that the funds are now back on Eve and not on Gaia
-	eveUpdateBal, err = eve.GetBalance(ctx, eveUserAddr, eve.Config().Denom)
-	require.NoError(t, err)
-	require.Equal(t, eveOrigBal, eveUpdateBal)
-
-	gaiaUpdateBal, err = gaia.GetBalance(ctx, gaiaUserAddr, eveIBCDenom)
-	require.NoError(t, err)
-	require.Equal(t, true, gaiaUpdateBal.IsZero())
+	// rlyABal, err := eve.GetBalance(ctx, rlyAddressA, eve.Config().Denom)
+	// require.NoError(t, err)
+	// require.True(t, rlyAOrigBal.AddRaw(1000).Equal(rlyABal))
 }

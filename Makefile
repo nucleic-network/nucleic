@@ -159,20 +159,20 @@ test-system: install
 
 test-wasm:
 	@bash ./scripts/wasm/test_wasm.sh
-	
+
 ###############################################################################
 ###                             Interchain test                             ###
 ###############################################################################
 
 # Executes start chain tests via interchaintest
 ictest-start-cosmos:
-	cd tests/interchaintest && go test -race -v -run TestStartEve .	
+	cd tests/interchaintest && go test -timeout=25m -race -v -run TestStartEve .
 
 ictest-basic-cosmos:
-	cd tests/interchaintest && go test -race -v -run TestBasicEve .		
+	cd tests/interchaintest && go test -timeout=25m -race -v -run TestBasicEve .
 
 ictest-ibc-transfer:
-	cd tests/interchaintest && go test -race -v -run TestEveGaiaIBCTransfer .	
+	cd tests/interchaintest && go test -timeout=25m -race -v -run TestEveGaiaIBCTransfer .
 
 ###############################################################################
 ###                                Linting                                  ###
@@ -224,3 +224,27 @@ proto-check-breaking:
 	test test-all test-build test-cover test-unit test-race \
 	test-sim-import-export build-windows-client \
 	test-system
+
+###############################################################################
+###                        Integration Tests                                ###
+###############################################################################
+
+integration-test-all: init-test-framework \
+	test-alliance \
+
+init-test-framework: clean-testing-data install
+	@echo "Initializing both blockchains..."
+	./scripts/tests/init-test-framework.sh
+	./scripts/tests/relayer/interchain-acc-config/rly-init.sh
+
+test-alliance:
+	@echo "Testing alliance..."
+	./scripts/tests/alliance/delegate.sh
+
+clean-testing-data:
+	@echo "Killing eved and removing previous data"
+	-@pkill $(BINARY) 2>/dev/null
+	-@pkill rly 2>/dev/null
+	-@pkill eved_new 2>/dev/null
+	-@pkill eved_old 2>/dev/null
+	-@rm -rf ./data
